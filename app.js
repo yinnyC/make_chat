@@ -1,13 +1,23 @@
-//App.js
+const path = require('path')
+//app.js
 const express = require('express');
 const app = express();
-//Socket.io has to use the http server
 const server = require('http').Server(app);
 
-//Express View Engine for Handlebars
+//Socket.io
+const io = require('socket.io')(server);
+io.on("connection", (socket) => {
+  console.log("🔌 New user connected! 🔌");
+})
+
 const exphbs  = require('express-handlebars');
-app.engine('handlebars', exphbs());
+app.engine('handlebars', exphbs({
+  layoutsDir: path.join(__dirname, '/views/'),
+  extname: 'handlebars',
+  defaultLayout: 'index'
+}));
 app.set('view engine', 'handlebars');
+app.use('/public', express.static('public'))
 
 app.get('/', (req, res) => {
   res.render('index.handlebars');
